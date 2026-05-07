@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>ตลาดยมโลก</title>
+<style>
+  :root{
+    --bg:#efefef;
+    --card:#f8f8f8;
+    --ink:#111;
+    --muted:#444;
+    --line:#111;
+    --shadow:0 6px 0 #111;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
+  html,body{
+    width:100%;height:100%;overflow:hidden;
+    background:linear-gradient(180deg,#f3f3f3 0%, #ebebeb 100%);
+    color:var(--ink);
+    touch-action:none;
+    overscroll-behavior:none;
+    -webkit-user-select:none; user-select:none;
+    -webkit-touch-callout:none;
+  }
+  button{font:inherit}
+
+  .rotate-warning{
+    position:fixed; inset:0; z-index:9999;
+    display:none; align-items:center; justify-content:center;
+    text-align:center; padding:24px;
+    background:#fff; color:#111; font-size:18px; font-weight:700;
+  }
+  @media (orientation:portrait){
+    .rotate-warning{display:flex;}
+    .app{display:none;}
+  }
+
+  .app{
+    width:100vw;height:100vh;
+    display:flex;flex-direction:column;
+  }
+  .topbar{
+    flex:0 0 44px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 14px;
+    border-bottom:4px solid var(--line);
+    background:#fff;
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    min-width:0;
+  }
+  .moon{font-size:18px; line-height:1;}
+  .title{
+    font-size:18px;font-weight:900;letter-spacing:.5px;
+    white-space:nowrap;
+  }
+  .stats{
+    display:flex;gap:10px; align-items:center;
+    font-size:13px;font-weight:700; white-space:nowrap;
+  }
+  .scene{
+    flex:1;
+    min-height:0;
+    display:grid;
+    grid-template-columns: 1.05fr 1.2fr 1.35fr 74px;
+    gap:12px;
+    padding:12px;
+  }
+  .card{
+    background:var(--card);
+    border:4px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    min-height:0;
+    overflow:hidden;
+  }
+  .panel{
+    display:flex;
+    flex-direction:column;
+    padding:12px;
+    min-width:0;
+    min-height:0;
+  }
+  .panel-header{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:8px; margin-bottom:8px;
+  }
+  .panel-title{
+    font-size:16px;font-weight:900;
+    letter-spacing:.2px;
+  }
+  .small-tag{
+    border:2px solid var(--line);
+    border-radius:999px;
+    padding:3px 9px;
+    font-size:11px;
+    font-weight:800;
+    background:#fff;
+    white-space:nowrap;
+  }
+
+  /* LEFT */
+  .customer-wrap{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+    gap:10px; min-height:0;
+  }
+  .customer-face-btn{
+    width:100%;
+    border:none; background:transparent; color:inherit;
+    padding:0; cursor:pointer;
+  }
+  .customer-face-card{
+    width:min(100%, 220px);
+    margin:4px auto 0;
+    border:4px solid var(--line);
+    border-radius:22px;
+    background:#fff;
+    box-shadow:0 4px 0 #111;
+    aspect-ratio:1/1;
+    display:flex;align-items:center;justify-content:center;
+    font-size:92px;
+  }
+  .customer-name{
+    font-size:18px;font-weight:900;text-align:center;line-height:1.1;
+  }
+  .customer-sub{font-size:12px;color:var(--muted);text-align:center;line-height:1.35;}
+  .mood-pill{
+    border:3px solid var(--line);
+    background:#fff;
+    border-radius:999px;
+    padding:5px 10px;
+    font-size:12px;
+    font-weight:900;
+  }
+  .mini-stack{
+    margin-top:auto;
+    width:100%;
+    display:grid;
+    gap:8px;
+  }
+  .mini-box{
+    background:#fff;
+    border:3px solid var(--line);
+    border-radius:14px;
+    padding:8px 10px;
+    font-size:12px;
+    line-height:1.35;
+  }
+  .mini-box b{display:block;font-size:11px;margin-bottom:3px;}
+
+  /* CENTER */
+  .item-stage{
+    height:100%;
+    display:flex;flex-direction:column;
+    padding:12px;
+    min-height:0;
+  }
+  .item-art{
+    flex:1;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center; min-height:0;
+    gap:8px;
+  }
+  .item-icon-box{
+    width:min(100%, 260px);
+    aspect-ratio:1/1;
+    border:4px solid var(--line);
+    border-radius:24px;
+    background:#fff;
+    box-shadow:0 4px 0 #111;
+    display:flex;align-items:center;justify-content:center;
+    font-size:92px;
+  }
+  .item-name{
+    font-size:20px;font-weight:900;line-height:1.1;
+  }
+  .item-desc{
+    width:min(100%, 360px);
+    font-size:13px;line-height:1.45;color:#222;
+  }
+  .price-grid{
+    width:min(100%, 360px);
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:2px;
+  }
+  .price-card{
+    border:3px solid var(--line);
+    background:#fff;
+    border-radius:14px;
+    padding:8px 10px;
+    font-size:12px;
+    line-height:1.35;
+  }
+  .price-card b{display:block;font-size:11px;margin-bottom:3px;}
+  .action-row{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:8px;
+    margin-top:10px;
+  }
+  .action-btn{
+    border:4px solid var(--line);
+    border-radius:14px;
+    background:#fff;
+    color:#111;
+    padding:10px 8px;
+    font-size:13px;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 4px 0 #111;
+    transition:transform .05s ease;
+  }
+  .action-btn:active{transform:translateY(2px); box-shadow:0 2px 0 #111;}
+  .action-btn.buy{background:#f5f5f5;}
+  .action-btn.reject{background:#fff;}
+  .action-btn.bargain{background:#fff;}
+  .notice{
+    margin-top:8px;
+    border:3px dashed #111;
+    border-radius:14px;
+    background:#fff;
+    padding:8px 10px;
+    font-size:12px;
+    line-height:1.4;
+    min-height:48px;
+  }
+
+  /* RIGHT MAIN */
+  .detail-wrap{
+    height:100%; display:flex; flex-direction:column; min-height:0;
+    padding:12px;
+  }
+  .detail-tabs{
+    display:flex; gap:8px; margin-bottom:10px;
+  }
+  .tab-btn{
+    flex:1;
+    border:4px solid var(--line);
+    border-radius:14px;
+    background:#fff;
+    box-shadow:0 4px 0 #111;
+    padding:8px 6px;
+    font-size:18px;
+    cursor:pointer;
+  }
+  .tab-btn.active{background:#111;color:#fff;}
+  .detail-card{
+    flex:1; min-height:0;
+    border:4px solid var(--line);
+    border-radius:22px;
+    background:#fff;
+    box-shadow:0 4px 0 #111;
+    padding:12px;
+    overflow:auto;
+  }
+  .detail-head{
+    display:flex;justify-content:space-between;align-items:flex-start;gap:8px;
+    margin-bottom:10px;
+  }
+  .detail-head h2{
+    font-size:18px;line-height:1.1;
+  }
+  .detail-head .sub{
+    font-size:11px;color:#555;font-weight:700;text-align:right;
+  }
+  .detail-hero{
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:10px;
+  }
+  .detail-emoji{
+    width:60px;height:60px;border:4px solid var(--line);border-radius:16px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:32px;background:#f7f7f7;flex:0 0 auto;
+  }
+  .detail-lines{
+    flex:1; min-width:0;
+  }
+  .line{
+    display:flex;justify-content:space-between;gap:10px;
+    border-bottom:2px solid #111;
+    padding:4px 0;
+    font-size:12px;
+  }
+  .line:last-child{border-bottom:none;}
+  .line span:last-child{font-weight:900;text-align:right;}
+  .story{
+    margin-top:10px;
+    border:3px solid #111;
+    border-radius:16px;
+    padding:10px;
+    font-size:12px;
+    line-height:1.5;
+    background:#fafafa;
+  }
+  .story b{display:block;margin-bottom:4px;}
+
+  /* RIGHT RAIL */
+  .rail{
+    display:flex;flex-direction:column;align-items:stretch;gap:8px;
+    min-width:0;
+  }
+  .rail-btn{
+    width:100%;
+    border:4px solid var(--line);
+    border-radius:18px;
+    background:#fff;
+    box-shadow:0 4px 0 #111;
+    cursor:pointer;
+    aspect-ratio:1/1;
+    font-size:26px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .rail-btn.active{background:#111;color:#fff;}
+  .rail-slot{
+    flex:1;
+    border:4px solid var(--line);
+    border-radius:18px;
+    background:#fff;
+    box-shadow:0 4px 0 #111;
+    opacity:.12;
+  }
+
+  .log{
+    border-top:4px solid var(--line);
+    background:#fff;
+    padding:8px 12px;
+    font-size:12px;
+    line-height:1.4;
+    max-height:62px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+
+  @media (max-height: 560px){
+    .scene{gap:8px;padding:8px;grid-template-columns: 1fr 1.15fr 1.2fr 62px;}
+    .topbar{height:40px; padding:0 10px;}
+    .title{font-size:16px;}
+    .stats{font-size:12px;}
+    .panel{padding:10px;}
+    .panel-title{font-size:15px;}
+    .customer-face-card,.item-icon-box{font-size:70px;}
+    .customer-name{font-size:16px;}
+    .item-name{font-size:18px;}
+    .item-desc{font-size:12px;}
+    .action-btn{padding:9px 6px;font-size:12px;}
+    .detail-head h2{font-size:16px;}
+    .detail-emoji{width:52px;height:52px;font-size:28px;}
+    .rail-btn{font-size:22px;}
+    .log{max-height:54px;}
+  }
+</style>
+</head>
+<body>
+  <div class="rotate-warning">📱 กรุณาหมุนหน้าจอเป็นแนวนอน</div>
+
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="moon">🌑</div>
+        <div class="title">ตลาดยมโลก</div>
+      </div>
+      <div class="stats">
+        <span>💰 <span id="money">1000</span></span>
+        <span>📅 วัน <span id="day">1</span></span>
+      </div>
+    </div>
+
+    <div class="scene">
+      <!-- LEFT: customer -->
+      <section class="card panel">
+        <div class="panel-header">
+          <div class="panel-title">ลูกค้า</div>
+          <div class="small-tag" id="customerTypeTag">ผีทั่วไป</div>
+        </div>
+
+        <div class="customer-wrap">
+          <button class="customer-face-btn" id="focusCustomerBtn" aria-label="ดูข้อมูลลูกค้า">
+            <div class="customer-face-card" id="customerFace">👻</div>
+          </button>
+          <div class="customer-name" id="customerName">ผีเร่ร่อน</div>
+          <div class="customer-sub" id="customerQuote">"ของนี้... มีบางอย่างติดมาด้วย"</div>
+          <div class="mood-pill" id="mood">🙂 ปกติ</div>
+        </div>
+
+        <div class="mini-stack">
+          <div class="mini-box">
+            <b>นิสัยคร่าวๆ</b>
+            <span id="miniTrait">ชอบต่อราคา แต่ไม่ค่อยโกหก</span>
+          </div>
+          <div class="mini-box">
+            <b>ความเสี่ยง</b>
+            <span id="miniRisk">ต่ำ</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CENTER: item -->
+      <section class="card item-stage">
+        <div class="panel-header">
+          <div class="panel-title">ของที่มาขาย</div>
+          <div class="small-tag" id="roundTag">เคาน์เตอร์</div>
+        </div>
+
+        <div class="item-art">
+          <div class="item-icon-box" id="itemIcon">🕯️</div>
+          <div class="item-name" id="itemName">เทียนวิญญาณ</div>
+          <div class="item-desc" id="itemDesc">เทียนเก่าๆ ที่มีเสียงร้องไห้ดังออกมาตอนกลางคืน</div>
+
+          <div class="price-grid">
+            <div class="price-card">
+              <b>ราคาเสนอ</b>
+              <span>💰 <span id="askPrice">300</span></span>
+            </div>
+            <div class="price-card">
+              <b>มูลค่าตลาด</b>
+              <span>💰 <span id="marketValue">420</span></span>
+            </div>
+            <div class="price-card">
+              <b>ความหายาก</b>
+              <span id="rarity">หายาก</span>
+            </div>
+            <div class="price-card">
+              <b>คำสาป</b>
+              <span id="curse">ต่ำ</span>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <button class="action-btn reject" onclick="rejectItem()">ไม่ซื้อ</button>
+            <button class="action-btn buy" onclick="buyItem()">ซื้อทันที</button>
+            <button class="action-btn bargain" onclick="bargainItem()">ต่อรอง</button>
+          </div>
+
+          <div class="notice" id="notice">กดปุ่มด้านขวาเพื่อสลับการ์ดรายละเอียด</div>
+        </div>
+      </section>
+
+      <!-- RIGHT MAIN: detail card -->
+      <section class="card detail-wrap">
+        <div class="detail-tabs">
+          <button class="tab-btn active" id="itemTabBtn" onclick="setTab('item')">📦</button>
+          <button class="tab-btn" id="customerTabBtn" onclick="setTab('customer')">🙂</button>
+        </div>
+
+        <div class="detail-card" id="detailCard">
+          <!-- injected by JS -->
+        </div>
+      </section>
+
+      <!-- RIGHT RAIL -->
+      <aside class="rail">
+        <button class="rail-btn active" id="railItemBtn" onclick="setTab('item')" aria-label="ดูรายละเอียดของ">◫</button>
+        <button class="rail-btn" id="railCustomerBtn" onclick="setTab('customer')" aria-label="ดูนิสัยลูกค้า">☺</button>
+        <div class="rail-slot"></div>
+        <div class="rail-slot"></div>
+        <div class="rail-slot"></div>
+        <div class="rail-slot"></div>
+      </aside>
+    </div>
+
+    <div class="log" id="log">ตลาดยมโลกเปิดแล้ว...</div>
+  </div>
+
+<script>
+  let money = 1000;
+  let day = 1;
+  let currentTab = 'item';
+  let currentAsk = 300;
+  let currentItem = null;
+  let currentCustomer = null;
+
+  const customers = [
+    {
+      name: 'ผีเร่ร่อน', face: '👻', type: 'วิญญาณหลงทาง', mood: '🙂 ปกติ',
+      trait: 'ชอบต่อราคา แต่ไม่ค่อยโกหก', risk: 'ต่ำ', quote: '"ของนี้... มีบางอย่างติดมาด้วย"',
+      greed: 28, honesty: 76, bio: 'วนเวียนอยู่แถวตลาดเก่ามานาน ชอบเอาของบ้านๆ มาแลกของแปลก'
+    },
+    {
+      name: 'เปรตหิวโซ', face: '😈', type: 'ผีหิววิญญาณ', mood: '😡 หิวจัด',
+      trait: 'แรงกดดันสูง, ชอบตบราคา', risk: 'สูง', quote: '"เอามาเร็ว ข้าจะรีบไป"',
+      greed: 86, honesty: 31, bio: 'ไม่เคยอยู่ได้นานในที่เดียว ถ้าต่อแรงเกินจะอาละวาด'
+    },
+    {
+      name: 'แม่ชีไร้หน้า', face: '🧎', type: 'ภิกษุวิญญาณ', mood: '😶 เงียบ',
+      trait: 'นิ่งมาก แต่ประวัติไม่น่าไว้ใจ', risk: 'กลาง', quote: '"สิ่งนี้ไม่ควรมีอยู่"',
+      greed: 47, honesty: 58, bio: 'เคยดูแลศาลาเก็บของต้องห้าม ก่อนทุกอย่างจะหายไปพร้อมตัวตน'
+    },
+    {
+      name: 'วิญญาณเด็ก', face: '👦', type: 'ดวงวิญญาณเด็ก', mood: '😰 กลัว',
+      trait: 'ขี้กลัว, มักพูดความจริง', risk: 'ต่ำ', quote: '"หนูขอขายอันนี้ได้ไหม"',
+      greed: 18, honesty: 90, bio: 'ถือของจากโลกเดิมมานาน อยากแลกเป็นสิ่งที่เบากว่า'
+    },
+    {
+      name: 'ยมทูต', face: '💀', type: 'ผู้เก็บเกี่ยว', mood: '👁 น่ากลัว',
+      trait: 'อ่านเกมเก่ง, ต่อรองเฉียบ', risk: 'สูง', quote: '"เจ้ารู้ราคาที่แท้จริงหรือไม่"',
+      greed: 62, honesty: 40, bio: 'เดินผ่านตลาดนี้เป็นประจำ ถ้ารับดีลผิดอาจเสียมากกว่ากำไร'
+    }
+  ];
+
+  const items = [
+    {
+      icon:'🕯️', name:'เทียนวิญญาณ', desc:'เทียนเก่าๆ ที่มีเสียงร้องไห้ตอนกลางคืน',
+      rarity:'หายาก', curse:'ต่ำ', market:420, baseAsk:300,
+      note:'จุดไฟแล้วจะเห็นเงาของคนที่เจ้าของเคยตามหา'
+    },
+    {
+      icon:'📿', name:'ลูกประคำต้องสาป', desc:'ใช้สวดแล้วจะได้ยินเสียงตอบกลับจากอีกฝั่ง',
+      rarity:'Epic', curse:'สูง', market:690, baseAsk:450,
+      note:'คนนิยมเพราะเชื่อว่าป้องกันผีได้ แต่จริงๆ มันเรียกผีได้มากกว่า'
+    },
+    {
+      icon:'🗡️', name:'มีดอาคม', desc:'คมพอจะตัดคำสาปบางชนิดออกจากของ',
+      rarity:'Rare', curse:'กลาง', market:820, baseAsk:600,
+      note:'ถ้าจับผิดวิธี จะได้ยินเสียงโลหะกระซิบคืน'
+    },
+    {
+      icon:'🎎', name:'ตุ๊กตาผี', desc:'บางครั้งมันขยับเองได้ ถ้าไม่มีใครมอง',
+      rarity:'Legendary', curse:'สูงมาก', market:1200, baseAsk:700,
+      note:'ของที่คุยกับเด็กๆ ได้ดี แต่ผู้ใหญ่ส่วนมากไม่ชอบ'
+    },
+    {
+      icon:'🪞', name:'กระจกควันดำ', desc:'สะท้อนหน้าเดิมไม่ได้เสมอไป',
+      rarity:'Rare', curse:'สูง', market:950, baseAsk:520,
+      note:'ผู้เชี่ยวชาญใช้ดูว่าของชิ้นไหนเคยผ่านความตายมาบ้าง'
+    }
+  ];
+
+  const fmt = (n) => Math.max(0, Math.round(n));
+  const pick = (arr) => arr[Math.floor(Math.random()*arr.length)];
+  const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+
+  function setLog(text){
+    document.getElementById('log').textContent = text;
+  }
+  function addLog(text){
+    const current = document.getElementById('log').textContent;
+    document.getElementById('log').textContent = text + '  •  ' + current;
+  }
+
+  function randomizeRound(){
+    currentCustomer = pick(customers);
+    currentItem = pick(items);
+
+    const moodFactor = currentCustomer.greed > 70 ? 1.18 : currentCustomer.greed < 30 ? 0.92 : 1.0;
+    const chaos = (Math.random()*0.22) + 0.9;
+    currentAsk = fmt(currentItem.baseAsk * moodFactor * chaos);
+    currentAsk = clamp(currentAsk, 50, 9999);
+
+    document.getElementById('customerFace').textContent = currentCustomer.face;
+    document.getElementById('customerName').textContent = currentCustomer.name;
+    document.getElementById('customerTypeTag').textContent = currentCustomer.type;
+    document.getElementById('customerQuote').textContent = currentCustomer.quote;
+    document.getElementById('mood').textContent = currentCustomer.mood;
+    document.getElementById('miniTrait').textContent = currentCustomer.trait;
+    document.getElementById('miniRisk').textContent = currentCustomer.risk;
+
+    document.getElementById('itemIcon').textContent = currentItem.icon;
+    document.getElementById('itemName').textContent = currentItem.name;
+    document.getElementById('itemDesc').textContent = currentItem.desc;
+    document.getElementById('askPrice').textContent = currentAsk;
+    document.getElementById('marketValue').textContent = currentItem.market;
+    document.getElementById('rarity').textContent = currentItem.rarity;
+    document.getElementById('curse').textContent = currentItem.curse;
+    document.getElementById('roundTag').textContent = 'วัน ' + day;
+
+    renderDetail();
+    setLog('ลูกค้ารายใหม่เข้ามาแล้ว');
+  }
+
+  function renderDetail(){
+    const el = document.getElementById('detailCard');
+    if(currentTab === 'item'){
+      el.innerHTML = `
+        <div class="detail-head">
+          <h2>รายละเอียดของ</h2>
+          <div class="sub">ใช้เพื่อซื้อ / ต่อรอง</div>
+        </div>
+        <div class="detail-hero">
+          <div class="detail-emoji">${currentItem.icon}</div>
+          <div class="detail-lines">
+            <div class="line"><span>ชื่อ</span><span>${currentItem.name}</span></div>
+            <div class="line"><span>ราคาเสนอ</span><span>💰 ${currentAsk}</span></div>
+            <div class="line"><span>มูลค่าตลาด</span><span>💰 ${currentItem.market}</span></div>
+            <div class="line"><span>ความต่าง</span><span>${fmt(currentItem.market - currentAsk)}</span></div>
+          </div>
+        </div>
+        <div class="story"><b>รายละเอียดคร่าวๆ</b>${currentItem.desc}</div>
+        <div class="story"><b>โน้ต</b>${currentItem.note}</div>
+      `;
+    }else{
+      el.innerHTML = `
+        <div class="detail-head">
+          <h2>อุปนิสัยลูกค้า</h2>
+          <div class="sub">กดดูเพื่ออ่านเกม</div>
+        </div>
+        <div class="detail-hero">
+          <div class="detail-emoji">${currentCustomer.face}</div>
+          <div class="detail-lines">
+            <div class="line"><span>ชื่อ</span><span>${currentCustomer.name}</span></div>
+            <div class="line"><span>ชนิดผี</span><span>${currentCustomer.type}</span></div>
+            <div class="line"><span>อารมณ์</span><span>${currentCustomer.mood}</span></div>
+            <div class="line"><span>ความเสี่ยง</span><span>${currentCustomer.risk}</span></div>
+          </div>
+        </div>
+        <div class="story"><b>อุปนิสัย</b>${currentCustomer.trait}</div>
+        <div class="story"><b>ประวัติคร่าวๆ</b>${currentCustomer.bio}</div>
+      `;
+    }
+  }
+
+  function setTab(tab){
+    currentTab = tab;
+    document.getElementById('itemTabBtn').classList.toggle('active', tab === 'item');
+    document.getElementById('customerTabBtn').classList.toggle('active', tab === 'customer');
+    document.getElementById('railItemBtn').classList.toggle('active', tab === 'item');
+    document.getElementById('railCustomerBtn').classList.toggle('active', tab === 'customer');
+    renderDetail();
+    setLog(tab === 'item' ? 'เปิดการ์ดรายละเอียดของ' : 'เปิดการ์ดอุปนิสัยลูกค้า');
+  }
+  window.setTab = setTab;
+
+  function nextDay(){
+    day += 1;
+    document.getElementById('day').textContent = day;
+    randomizeRound();
+  }
+
+  function bargainItem(){
+    const greed = currentCustomer.greed;
+    const discountBase = Math.floor(Math.random() * 120);
+    const moodBonus = currentCustomer.mood.includes('โมโห') ? -20 : currentCustomer.mood.includes('กลัว') ? 35 : 10;
+    const discount = clamp(Math.round(discountBase + moodBonus - greed * 0.15), 5, 180);
+    currentAsk = clamp(currentAsk - discount, 30, currentItem.market + 999);
+    document.getElementById('askPrice').textContent = currentAsk;
+    renderDetail();
+    addLog(`ต่อรองลดได้ ${discount}`);
+  }
+
+  function buyItem(){
+    if(money < currentAsk){
+      addLog('เงินไม่พอ');
+      return;
+    }
+
+    const profit = currentItem.market - currentAsk;
+    money += profit;
+    document.getElementById('money').textContent = fmt(money);
+
+    if(profit >= 0){
+      addLog(`ซื้อสำเร็จ กำไร ${profit}`);
+    }else{
+      addLog(`ซื้อพลาด ขาดทุน ${Math.abs(profit)}`);
+    }
+    nextDay();
+  }
+
+  function rejectItem(){
+    addLog('ปฏิเสธดีล');
+    nextDay();
+  }
+
+  document.getElementById('focusCustomerBtn').addEventListener('click', () => setTab('customer'));
+
+  // hard block zoom gestures
+  document.addEventListener('gesturestart', e => e.preventDefault(), {passive:false});
+  document.addEventListener('gesturechange', e => e.preventDefault(), {passive:false});
+  document.addEventListener('gestureend', e => e.preventDefault(), {passive:false});
+  document.addEventListener('dblclick', e => e.preventDefault(), {passive:false});
+
+  // init
+  document.getElementById('money').textContent = money;
+  document.getElementById('day').textContent = day;
+  randomizeRound();
+  setTab('item');
+</script>
+</body>
+</html>
